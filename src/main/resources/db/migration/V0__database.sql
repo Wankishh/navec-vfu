@@ -1,0 +1,1 @@
+CREATE DATABASE IF NOT EXISTS db COLLATE utf16_general_ci;
