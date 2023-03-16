@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  db:
+    build: ./db
+    restart: on-failure
+    environment:
+        MYSQL_DATABASE: 'db'
+        MYSQL_USER: 'user'
+        MYSQL_PASSWORD: 'user'
+        MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3323:3306'
+    expose:
+      - '3323'
+    volumes:
+      - ./db/data:/var/lib/mysql

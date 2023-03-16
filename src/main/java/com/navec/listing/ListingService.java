@@ -14,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @Slf4j
 public class ListingService {
@@ -50,10 +48,12 @@ public class ListingService {
     }
 
     public ListingResponse getListing(final Long listingId) throws ResponseException {
-        Listing listing = this.listingRepository.findById(listingId)
-                .orElseThrow(() -> new ResponseException(HttpStatus.NOT_FOUND, "Listing not found"));
+        return new ListingResponse(findListingById(listingId), this.env.getGetBaseImageUri());
+    }
 
-        return new ListingResponse(listing, this.env.getGetBaseImageUri());
+    public Listing findListingById(Long listingId) {
+        return this.listingRepository.findById(listingId)
+                .orElseThrow(() -> new ResponseException(HttpStatus.NOT_FOUND, "Listing not found"));
     }
 
     public ListingResponse createListing(CreateListingRequest createListingRequest) {
