@@ -3,8 +3,8 @@ target/
 !backend/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-ci/db/db
-ci/backend/target
+db/data
+uploads
 
 !**/node_modules
 

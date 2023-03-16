@@ -2,11 +2,15 @@ package com.navec.listing;
 
 import com.navec.address.area.Area;
 import com.navec.address.place.Place;
+import com.navec.comment.Comment;
+import com.navec.image.Image;
 import com.navec.listing.section.Section;
 import com.navec.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -19,6 +23,12 @@ public class Listing {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "listing")
+    private List<Image> images;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "listing")
+    private List<Comment> comments;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "section_id", nullable = false)

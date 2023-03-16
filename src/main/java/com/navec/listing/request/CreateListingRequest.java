@@ -1,11 +1,10 @@
 package com.navec.listing.request;
 
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class CreateListingRequest {
@@ -33,4 +32,8 @@ public class CreateListingRequest {
     private Integer currency;
 
     private String youtubeUrl;
+
+    @NotEmpty
+    @Size(min = 1, max = 20)
+    private List<Long> images;
 }

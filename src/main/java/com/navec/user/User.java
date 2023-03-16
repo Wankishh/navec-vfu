@@ -1,6 +1,7 @@
 package com.navec.user;
 
 import com.navec.auth.forgotten_password.ForgottenPassword;
+import com.navec.comment.Comment;
 import com.navec.user.activations.Activation;
 import com.navec.user.profile.Profile;
 import jakarta.persistence.*;
@@ -30,8 +31,11 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     private Profile profile;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Comment> comments;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ForgottenPassword> forgottenPasswords;

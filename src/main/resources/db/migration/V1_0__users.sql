@@ -14,7 +14,7 @@ create table db.users
 create index user_email_index on db.users (email);
 
 -- Admin123456
-INSERT INTO users(email, name, password, active, role)
+INSERT INTO db.users(email, name, password, active, role)
     VALUES ('admin@navec.bg', 'Admin', '$2a$12$HMgOHtkMDq0iYxJvxtAw5uiTGJ9P7j6G3CQJjz3q2bGNoIeRoqoeK', 1, 'ADMIN'),
            -- User123456
            ('user@navec.bg', 'User', '$2a$10$Ll1F306bTNkCwZhFuH2uKO0zUwgPM/LtJXsXLDnzd99wRZIGl2u02', 1, 'USER')

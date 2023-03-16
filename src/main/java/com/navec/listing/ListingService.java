@@ -2,7 +2,9 @@ package com.navec.listing;
 
 import com.navec.address.area.AreaService;
 import com.navec.address.place.PlaceService;
+import com.navec.environment.Env;
 import com.navec.exception.ResponseException;
+import com.navec.image.ImageService;
 import com.navec.listing.request.CreateListingRequest;
 import com.navec.listing.response.ListingResponse;
 import com.navec.listing.section.SectionService;
@@ -26,25 +28,32 @@ public class ListingService {
 
     private final ListingRepository listingRepository;
 
+    private final ImageService imageService;
+
+    private final Env env;
+
     public ListingService(AreaService areaService,
                           PlaceService placeService,
                           UserService userService,
-                          SectionService sectionService, ListingRepository listingRepository) {
+                          SectionService sectionService,
+                          ListingRepository listingRepository,
+                          ImageService imageService,
+                          Env env) {
         this.areaService = areaService;
         this.placeService = placeService;
         this.userService = userService;
         this.sectionService = sectionService;
         this.listingRepository = listingRepository;
+        this.imageService = imageService;
+        this.env = env;
+
     }
 
     public ListingResponse getListing(final Long listingId) throws ResponseException {
-        Optional<Listing> optionalListing = this.listingRepository.findById(listingId);
+        Listing listing = this.listingRepository.findById(listingId)
+                .orElseThrow(() -> new ResponseException(HttpStatus.NOT_FOUND, "Listing not found"));
 
-        if(optionalListing.isEmpty()) {
-            throw new ResponseException(HttpStatus.NOT_FOUND, "Listing not found");
-        }
-
-        return new ListingResponse(optionalListing.get());
+        return new ListingResponse(listing, this.env.getGetBaseImageUri());
     }
 
     public ListingResponse createListing(CreateListingRequest createListingRequest) {
@@ -66,6 +75,9 @@ public class ListingService {
         newListing.setArchived(false);
         newListing.setWatchers(0);
         Listing savedListing = this.listingRepository.save(newListing);
-        return new ListingResponse(savedListing);
+        savedListing.setImages(
+                this.imageService.updateImagesWithListing(createListingRequest.getImages(), savedListing)
+        );
+        return new ListingResponse(savedListing, this.env.getGetBaseImageUri());
     }
 }

@@ -5,6 +5,7 @@ import com.navec.exception.ResponseException;
 import com.navec.listing.request.CreateListingRequest;
 import com.navec.listing.response.ListingResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class ListingController {
     public ResponseEntity<Object> createListing(
             @Valid @RequestBody CreateListingRequest createListingRequest
     ) {
-        return ResponseEntity.ok(this.listingService.createListing(createListingRequest));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(this.listingService.createListing(createListingRequest));
     }
 }
