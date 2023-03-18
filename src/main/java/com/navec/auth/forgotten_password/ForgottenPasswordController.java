@@ -4,8 +4,10 @@ import com.navec.exception.ResponseException;
 import com.navec.auth.request.ForgottenPasswordRequestDto;
 import com.navec.auth.request.ResetPasswordRequestDto;
 import com.navec.auth.response.UserResponseDto;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping(path = "/api/v1/auth/forgotten-password")
+@Tag(name = "Forgotten Password")
 public class ForgottenPasswordController {
     private final ForgottenPasswordService forgottenPasswordService;
 
@@ -27,23 +30,14 @@ public class ForgottenPasswordController {
     public ResponseEntity<Object> index(
             @Valid @RequestBody ForgottenPasswordRequestDto request
     ) throws MessagingException, UnsupportedEncodingException {
-        try {
-            this.forgottenPasswordService.forgottenPassword(request);
-            return ResponseEntity.status(200).build();
-        } catch(ResponseException e) {
-            return ResponseEntity.status(500).build();
-        }
+        this.forgottenPasswordService.forgottenPassword(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping( path = "/reset")
     public ResponseEntity<UserResponseDto> resetPassword(
             @Valid @RequestBody ResetPasswordRequestDto requestDto
     ) {
-        try {
-            UserResponseDto userResponseDto = this.forgottenPasswordService.resetPassword(requestDto);
-            return ResponseEntity.ok(userResponseDto);
-        } catch(ResponseException e) {
-            return ResponseEntity.status(500).build();
-        }
+        return ResponseEntity.ok(this.forgottenPasswordService.resetPassword(requestDto));
     }
 }

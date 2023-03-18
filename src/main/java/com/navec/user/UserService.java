@@ -58,13 +58,11 @@ public class UserService {
     }
 
     public UserResponseDto login(LoginRequestDto request) throws ResponseException {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResponseException(HttpStatus.UNAUTHORIZED));
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                return getUserResponseDto(user);
-            }
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            return getUserResponseDto(user);
         }
 
         throw new ResponseException(HttpStatus.UNAUTHORIZED);
@@ -122,8 +120,10 @@ public class UserService {
         user.setActive(true);
         user.setUpdatedAt(TimestampUtils.getCurrentTimestamp());
         userRepository.save(user);
+        List<Activation> activations = activationRepository.findAllByUser(user);
+
         activationRepository.deleteAllById(
-                activationOptional.stream()
+                activations.stream()
                         .map(Activation::getId)
                         .toList()
         );

@@ -1,6 +1,6 @@
 package com.navec.listing.brand;
 
-import com.navec.listing.section.Section;
+import com.navec.section.Section;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

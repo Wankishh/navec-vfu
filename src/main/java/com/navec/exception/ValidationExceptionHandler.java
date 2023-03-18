@@ -1,5 +1,7 @@
 package com.navec.exception;
 
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -17,6 +19,7 @@ import java.util.HashMap;
 public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
+    @ApiResponse(responseCode = "500", description = "falls appart")
     public final ResponseEntity<Object> handleAllExceptions(Exception exception,
                                                             WebRequest ignoredRequest) {
         ValidationExceptionResponse validationExceptionResponse = new ValidationExceptionResponse(LocalDateTime.now(), exception.getMessage(),
@@ -26,12 +29,18 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ResponseException.class)
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "Resource not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden resource"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated"),
+    })
     public final ResponseEntity<Object> handleResponseException(ResponseException exception, WebRequest request) {
         HashMap<String, String> errors = new HashMap<>();
         errors.put("error", exception.getMessage());
         return new ResponseEntity<>(errors, exception.getStatusCode());
     }
 
+    @ApiResponse(responseCode = "422", description = "Input validation failed")
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
                                                                   HttpHeaders ignoredHeaders,
                                                                   HttpStatus ignoredStatus,

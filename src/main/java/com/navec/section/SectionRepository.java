@@ -1,4 +1,4 @@
-package com.navec.listing.section;
+package com.navec.section;
 
 import org.springframework.data.repository.CrudRepository;
 

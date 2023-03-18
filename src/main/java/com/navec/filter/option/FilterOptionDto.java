@@ -1,4 +1,4 @@
-package com.navec.listing.filter.option;
+package com.navec.filter.option;
 
 import lombok.Data;
 

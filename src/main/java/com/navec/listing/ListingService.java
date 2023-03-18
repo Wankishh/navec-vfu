@@ -7,7 +7,7 @@ import com.navec.exception.ResponseException;
 import com.navec.image.ImageService;
 import com.navec.listing.request.CreateListingRequest;
 import com.navec.listing.response.ListingResponse;
-import com.navec.listing.section.SectionService;
+import com.navec.section.SectionService;
 import com.navec.user.UserService;
 import com.navec.utils.TimestampUtils;
 import lombok.extern.slf4j.Slf4j;

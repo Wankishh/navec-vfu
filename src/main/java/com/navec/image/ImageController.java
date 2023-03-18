@@ -1,6 +1,8 @@
 package com.navec.image;
 
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,8 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/images")
+@Tag(name = "Images")
+@SecurityRequirement(name = "apiAuth")
 public class ImageController {
 
     private final ImageService imageService;

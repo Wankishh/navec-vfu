@@ -4,7 +4,7 @@ import com.navec.address.area.Area;
 import com.navec.address.place.Place;
 import com.navec.comment.Comment;
 import com.navec.image.Image;
-import com.navec.listing.section.Section;
+import com.navec.section.Section;
 import com.navec.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;

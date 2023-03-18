@@ -1,4 +1,4 @@
-package com.navec.listing.filter;
+package com.navec.filter;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

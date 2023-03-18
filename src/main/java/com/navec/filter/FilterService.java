@@ -1,7 +1,7 @@
-package com.navec.listing.filter;
+package com.navec.filter;
 
 import com.navec.exception.ResponseException;
-import com.navec.listing.section.SectionService;
+import com.navec.section.SectionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

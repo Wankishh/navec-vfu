@@ -1,4 +1,4 @@
-package com.navec.listing.section;
+package com.navec.section;
 
 import com.navec.exception.ResponseException;
 import org.springframework.http.HttpStatus;

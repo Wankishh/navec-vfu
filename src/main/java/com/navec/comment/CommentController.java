@@ -1,11 +1,15 @@
 package com.navec.comment;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/comments")
+@Tag(name = "Comments")
+@SecurityRequirement(name = "apiAuth")
 public class CommentController {
     private final CommentService commentService;
 
@@ -13,6 +17,7 @@ public class CommentController {
         this.commentService = commentService;
     }
 
+    @SecurityRequirement(name = "apiAuth")
     @PostMapping("/{listingId}")
     public ResponseEntity<Object> createComment(@RequestBody CreateCommentRequest createCommentRequest,
                                                 @PathVariable Long listingId) {

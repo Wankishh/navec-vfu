@@ -1,4 +1,4 @@
-package com.navec.listing.filter;
+package com.navec.filter;
 
 public enum FilterType {
     BRAND,

@@ -3,9 +3,10 @@ package com.navec.listing.response;
 
 import com.navec.address.area.AreaDto;
 import com.navec.address.place.PlaceDto;
+import com.navec.comment.CommentDto;
 import com.navec.image.ImageDto;
 import com.navec.listing.Listing;
-import com.navec.listing.section.SectionDto;
+import com.navec.section.SectionDto;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -22,6 +23,7 @@ public class ListingResponse {
     private PlaceDto place;
 
     private List<ImageDto> images;
+    private List<CommentDto> comments;
     private Double price;
     private Double priceBg;
     private Double priceEu;
@@ -43,6 +45,11 @@ public class ListingResponse {
                 listing.getImages()
                         .stream()
                         .map(image -> new ImageDto(image, baseImageUri))
+                        .toList() : new ArrayList<>();
+        this.comments = listing.getComments() != null ?
+                listing.getComments()
+                        .stream()
+                        .map(CommentDto::new)
                         .toList() : new ArrayList<>();
         this.price = listing.getPrice();
         this.priceBg = listing.getPriceBg();

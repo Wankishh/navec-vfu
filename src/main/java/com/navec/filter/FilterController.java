@@ -1,5 +1,6 @@
-package com.navec.listing.filter;
+package com.navec.filter;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/filters")
+@Tag(name = "Filters")
 public class FilterController {
 
     private final FilterService filterService;
@@ -18,8 +20,8 @@ public class FilterController {
         this.filterService = filterService;
     }
 
-    @GetMapping(path = "/{section_id}")
-    public ResponseEntity<List<FilterDto>> getFiltersBySections(@PathVariable("section_id") Long sectionId) {
+    @GetMapping(path = "/{sectionId}")
+    public ResponseEntity<List<FilterDto>> getFiltersBySections(@PathVariable Long sectionId) {
         return ResponseEntity.ok(this.filterService.getFiltersBySection(sectionId));
     }
 }
