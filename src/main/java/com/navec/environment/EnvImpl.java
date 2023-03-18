@@ -9,14 +9,23 @@ public class EnvImpl implements Env {
     private Boolean shouldSendEmails;
 
     @Value("${config.image_uri:http://localhost/static/}")
-    private String getBaseImageUri;
+    private String baseImageUri;
+
+    @Value("${config.admin_email:admin@navec.bg}")
+    private String adminEmail;
 
     @Override
     public Boolean getShouldSendEmail() {
         return shouldSendEmails;
     }
 
-    public String getGetBaseImageUri() {
-        return getBaseImageUri;
+    @Override
+    public String getBaseImageUri() {
+        return baseImageUri;
+    }
+
+    @Override
+    public String getAdminEmail() {
+        return adminEmail;
     }
 }

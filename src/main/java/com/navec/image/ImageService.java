@@ -46,7 +46,7 @@ public class ImageService {
         newImage.setUpdatedAt(TimestampUtils.getCurrentTimestamp());
         Image savedImage = this.imageRepository.save(newImage);
 
-        return new ImageDto(savedImage, this.env.getGetBaseImageUri());
+        return new ImageDto(savedImage, this.env.getBaseImageUri());
     }
 
     private String generateFileName() {

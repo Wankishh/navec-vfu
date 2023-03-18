@@ -48,7 +48,7 @@ public class ListingService {
     }
 
     public ListingResponse getListing(final Long listingId) throws ResponseException {
-        return new ListingResponse(findListingById(listingId), this.env.getGetBaseImageUri());
+        return new ListingResponse(findListingById(listingId), this.env.getBaseImageUri());
     }
 
     public Listing findListingById(Long listingId) {
@@ -78,6 +78,6 @@ public class ListingService {
         savedListing.setImages(
                 this.imageService.updateImagesWithListing(createListingRequest.getImages(), savedListing)
         );
-        return new ListingResponse(savedListing, this.env.getGetBaseImageUri());
+        return new ListingResponse(savedListing, this.env.getBaseImageUri());
     }
 }

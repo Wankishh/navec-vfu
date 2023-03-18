@@ -1,6 +1,8 @@
 package com.navec.notifications;
 
 import com.navec.auth.forgotten_password.ForgottenPassword;
+import com.navec.contact.Contact;
+import com.navec.environment.Env;
 import com.navec.user.User;
 import com.navec.user.activations.Activation;
 import jakarta.mail.MessagingException;
@@ -28,9 +30,12 @@ public class HtmlNotificationService implements Notification {
 
     private final TemplateEngine htmlTemplateEngine;
 
-    public HtmlNotificationService(JavaMailSender mailSender, TemplateEngine htmlTemplateEngine) {
+    private final Env env;
+
+    public HtmlNotificationService(JavaMailSender mailSender, TemplateEngine htmlTemplateEngine, Env env) {
         this.mailSender = mailSender;
         this.htmlTemplateEngine = htmlTemplateEngine;
+        this.env = env;
     }
 
     @Override
@@ -75,5 +80,16 @@ public class HtmlNotificationService implements Notification {
         messageHelper.setSubject(subject);
         messageHelper.setFrom(new InternetAddress(mailFrom, mailFromName));
         return messageHelper;
+    }
+
+    public void sendContactEmail(Contact contact) throws MessagingException, UnsupportedEncodingException {
+        final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+        final MimeMessageHelper messageHelper = getMimeMessageHelper(mimeMessage, this.env.getAdminEmail(), "Contact from Site");
+        String msgContent = "Име: " + contact.getName() + "\n" +
+                "Телефон: " + contact.getPhone() + "\n" +
+                "Email: " + contact.getEmail() + "\n" +
+                "Съобщение: " + contact.getMessage();
+        messageHelper.setText(msgContent);
+        mailSender.send(mimeMessage);
     }
 }

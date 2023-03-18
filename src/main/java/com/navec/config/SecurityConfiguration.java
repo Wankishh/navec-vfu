@@ -27,6 +27,8 @@ public class SecurityConfiguration {
             "/api/v1/auth/**",
             "/api/v1/filters/**",
             "/api/v1/sections/**",
+            "/api/v1/contacts",
+            "/api/v1/contacts/**",
     };
 
     @Bean
