@@ -34,8 +34,11 @@ public class Filter {
     @JoinColumn(name = "section_id", nullable = false)
     private Section section;
 
-    @JoinColumn(nullable = false)
+    @Column(nullable = false)
     private String name;
+
+    @Column(columnDefinition = "TINYINT DEFAULT 0")
+    private Boolean required;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "filter", orphanRemoval = true)
     private List<FilterOption> filterOptions;

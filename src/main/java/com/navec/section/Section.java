@@ -1,7 +1,7 @@
 package com.navec.section;
 
 import com.navec.listing.Listing;
-import com.navec.listing.brand.Brand;
+import com.navec.brand.Brand;
 import com.navec.filter.Filter;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,6 +13,12 @@ import java.util.List;
 @Entity
 @Getter @Setter
 @Table(name = "sections")
+@NamedEntityGraph(
+        name = "with-brands",
+        attributeNodes = {
+                @NamedAttributeNode("brands")
+        }
+)
 public class Section {
     @Id
     @GeneratedValue

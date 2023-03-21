@@ -1,6 +1,7 @@
 package com.navec.listing.request;
 
 
+import com.navec.listing_filter.ListingFilterRequest;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -13,6 +14,11 @@ public class CreateListingRequest {
     @Positive
     @NotNull
     private Long sectionId;
+
+
+    private Long brandId;
+
+    private Long brandModelId;
 
     @NotBlank
     private String description;
@@ -36,4 +42,8 @@ public class CreateListingRequest {
     @NotEmpty
     @Size(min = 1, max = 20)
     private List<Long> images;
+
+    @NotEmpty
+    @Size(min = 1)
+    private List<ListingFilterRequest> filters;
 }

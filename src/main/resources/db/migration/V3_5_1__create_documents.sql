@@ -12,4 +12,4 @@ CREATE INDEX searchable_type ON documents (type);
 
 
 INSERT INTO documents(type, content)
-    VALUES ('PrivacyPolicy', '<h1>Privacy Policy</h1>'), ('TermsOfUse', '<h1>Terms of Use</h1>')
+    VALUES ('PRIVACY_POLICY', '<h1>Privacy Policy</h1>'), ('TERMS_OF_USE', '<h1>Terms of Use</h1>')

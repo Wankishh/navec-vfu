@@ -1,7 +1,6 @@
 package com.navec.exception;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -29,11 +28,10 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ResponseException.class)
-    @ApiResponses({
-            @ApiResponse(responseCode = "404", description = "Resource not found"),
-            @ApiResponse(responseCode = "403", description = "Forbidden resource"),
-            @ApiResponse(responseCode = "401", description = "Unauthenticated"),
-    })
+    @ApiResponse(responseCode = "422", description = "Input validation failed")
+    @ApiResponse(responseCode = "404", description = "Resource not found")
+    @ApiResponse(responseCode = "403", description = "Forbidden resource")
+    @ApiResponse(responseCode = "401", description = "Unauthenticated")
     public final ResponseEntity<Object> handleResponseException(ResponseException exception, WebRequest request) {
         HashMap<String, String> errors = new HashMap<>();
         errors.put("error", exception.getMessage());

@@ -8,18 +8,21 @@ import java.util.List;
 @Data
 public class FilterDto {
     private Long id;
-    private FilterType filterType;
+    private FilterType type;
     private InputType inputType;
     private String name;
     private List<FilterOptionDto> filterOptions;
 
+    private Boolean required;
+
     public FilterDto(Filter filter) {
         this.id = filter.getId();
-        this.filterType = filter.getType();
+        this.type = filter.getType();
         this.inputType = filter.getInputType();
         this.name = filter.getName();
+        this.required = filter.getRequired();
 
-        if (this.filterType == FilterType.NORMAL) {
+        if (this.type == FilterType.NORMAL) {
             this.filterOptions = filter.getFilterOptions()
                     .stream()
                     .map(FilterOptionDto::new)

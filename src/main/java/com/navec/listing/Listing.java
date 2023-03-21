@@ -4,6 +4,9 @@ import com.navec.address.area.Area;
 import com.navec.address.place.Place;
 import com.navec.comment.Comment;
 import com.navec.image.Image;
+import com.navec.brand.Brand;
+import com.navec.brand_model.BrandModel;
+import com.navec.listing_filter.ListingFilter;
 import com.navec.section.Section;
 import com.navec.user.User;
 import jakarta.persistence.*;
@@ -15,12 +18,21 @@ import java.util.List;
 @Entity
 @Getter @Setter
 @Table(name = "listings")
+@NamedEntityGraphs(
+        @NamedEntityGraph(
+                name = "searched-listings",
+                attributeNodes = {
+                        @NamedAttributeNode(value = "images"),
+                        @NamedAttributeNode(value = "place"),
+                }
+        )
+)
 public class Listing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -30,9 +42,17 @@ public class Listing {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "listing")
     private List<Comment> comments;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", nullable = false)
     private Section section;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_model_id")
+    private BrandModel brandModel;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "area_id", nullable = false)
@@ -41,6 +61,9 @@ public class Listing {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
+
+    @OneToMany(mappedBy = "listing", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<ListingFilter> listingFilters;
 
     private String title;
 

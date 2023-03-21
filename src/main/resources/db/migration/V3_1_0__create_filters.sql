@@ -17,7 +17,6 @@ CREATE TABLE filters
 INSERT INTO filters (id, type, input_type, section_id, name, required)
     VALUES(1, 'NORMAL', 'RADIO', 1, 'Състояние', 1),
           (2, 'INPUT', 'INPUT', 1, 'VIN', 0),
-          (3, 'BRAND', 'SELECT', 1, 'Марка', 1),
           (4, 'INPUT', 'INPUT', 1, 'Модификация', 0),
           (6, 'NORMAL', 'SELECT', 1, 'Купе', 1),
           (7, 'NORMAL', 'SELECT', 1, 'Скоростна кутия', 1),

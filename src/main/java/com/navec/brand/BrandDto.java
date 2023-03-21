@@ -1,5 +1,6 @@
-package com.navec.listing.brand;
+package com.navec.brand;
 
+import com.navec.brand_model.BrandModelDto;
 import lombok.Data;
 
 import java.util.List;

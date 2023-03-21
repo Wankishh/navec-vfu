@@ -1,8 +1,12 @@
-package com.navec.listing.brand;
+package com.navec.brand_model;
 
+import com.navec.brand.Brand;
+import com.navec.listing.Listing;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Collection;
 
 @Entity
 @Getter
@@ -19,6 +23,9 @@ public class BrandModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "serie_id")
     private BrandModelSerie serie;
+
+    @OneToMany(mappedBy = "brandModel")
+    private Collection<Listing> listings;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Brand brand;

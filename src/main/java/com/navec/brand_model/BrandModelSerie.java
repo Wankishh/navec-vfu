@@ -1,4 +1,4 @@
-package com.navec.listing.brand;
+package com.navec.brand_model;
 
 
 import jakarta.persistence.*;

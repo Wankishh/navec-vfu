@@ -22,6 +22,6 @@ public class FilterController {
 
     @GetMapping(path = "/{sectionId}")
     public ResponseEntity<List<FilterDto>> getFiltersBySections(@PathVariable Long sectionId) {
-        return ResponseEntity.ok(this.filterService.getFiltersBySection(sectionId));
+        return ResponseEntity.ok(this.filterService.getFilterDtosBySection(sectionId));
     }
 }

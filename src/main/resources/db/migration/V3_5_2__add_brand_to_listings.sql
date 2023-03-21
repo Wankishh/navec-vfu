@@ -1,0 +1,8 @@
+ALTER TABLE listings ADD COLUMN brand_id BIGINT DEFAULT NULL AFTER section_id;
+ALTER TABLE listings ADD COLUMN brand_model_id BIGINT DEFAULT NULL AFTER section_id;
+
+ALTER TABLE listings
+    ADD CONSTRAINT FK_LISTINGS_ON_BRAND FOREIGN KEY (brand_id) REFERENCES brands (id);
+
+ALTER TABLE listings
+    ADD CONSTRAINT FK_LISTINGS_ON_BRAND_MODEL FOREIGN KEY (brand_model_id) REFERENCES brand_models (id);
