@@ -21,7 +21,7 @@ public class ImageService {
 
     private final Env env;
 
-    public static final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/uploads";
+    public static final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/../uploads";
 
     public ImageService(ImageRepository imageRepository, Env env) {
         this.imageRepository = imageRepository;
