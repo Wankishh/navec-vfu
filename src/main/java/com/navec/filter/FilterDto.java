@@ -12,8 +12,9 @@ public class FilterDto {
     private InputType inputType;
     private String name;
     private List<FilterOptionDto> filterOptions;
-
     private Boolean required;
+
+    private Boolean showInPreview;
 
     public FilterDto(Filter filter) {
         this.id = filter.getId();
@@ -21,6 +22,7 @@ public class FilterDto {
         this.inputType = filter.getInputType();
         this.name = filter.getName();
         this.required = filter.getRequired();
+        this.showInPreview = filter.getShowInPreview();
 
         if (this.type == FilterType.NORMAL) {
             this.filterOptions = filter.getFilterOptions()

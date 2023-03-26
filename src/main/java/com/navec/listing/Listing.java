@@ -24,6 +24,8 @@ import java.util.List;
                 attributeNodes = {
                         @NamedAttributeNode(value = "images"),
                         @NamedAttributeNode(value = "place"),
+                        @NamedAttributeNode(value = "brand"),
+                        @NamedAttributeNode(value = "brandModel"),
                 }
         )
 )
@@ -62,7 +64,7 @@ public class Listing {
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
-    @OneToMany(mappedBy = "listing", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.REMOVE)
     private List<ListingFilter> listingFilters;
 
     private String title;
@@ -83,8 +85,6 @@ public class Listing {
 
     @Column(name = "youtube_url")
     private String youtubeUrl;
-
-    private Boolean archived;
 
     @Column(columnDefinition = "INT unsigned DEFAULT 0")
     private Integer watchers;

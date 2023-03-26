@@ -3,6 +3,7 @@ package com.navec.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,7 +31,6 @@ public class SecurityConfiguration {
             "/api/v1/contacts",
             "/api/v1/contacts/**",
             "/api/v1/documents/**",
-            "/api/v1/listings/**",
     };
 
     @Bean
@@ -41,6 +41,10 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests()
                 .requestMatchers(AUTH_WHITELIST)
                 .permitAll();
+
+        http.authorizeHttpRequests()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/listings/**")
+                        .permitAll();
 
         http
                 .authorizeHttpRequests()

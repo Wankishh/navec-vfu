@@ -29,7 +29,6 @@ public class ListingResponse {
     private Double priceEu;
     private Integer currency;
     private String youtubeUrl;
-    private Boolean archived;
     private String deletedAt;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -56,7 +55,6 @@ public class ListingResponse {
         this.priceEu = listing.getPriceEu();
         this.currency = listing.getCurrency();
         this.youtubeUrl = listing.getYoutubeUrl();
-        this.archived = listing.getArchived();
         this.deletedAt = listing.getDeletedAt() != null ? listing.getDeletedAt().toString() : null;
         this.createdAt = listing.getCreatedAt();
         this.updatedAt = listing.getUpdatedAt();

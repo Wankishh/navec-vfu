@@ -8,5 +8,5 @@ import java.util.List;
 public interface FilterRepository extends JpaRepository<Filter, Long> {
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH,
             value = "filter-with-options")
-    public List<Filter> findBySectionId(Long sectionId);
+    List<Filter> findBySectionId(Long sectionId);
 }

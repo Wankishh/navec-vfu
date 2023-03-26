@@ -10,6 +10,13 @@ import lombok.Setter;
 @Entity
 @Getter @Setter
 @Table(name = "listing_filters")
+@NamedEntityGraph(
+        name = "listing-filter",
+        attributeNodes = {
+                @NamedAttributeNode(value = "filter"),
+                @NamedAttributeNode(value = "filterOption"),
+        }
+)
 public class ListingFilter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -40,6 +40,20 @@ public class ListingController {
                 .body(this.listingService.createListing(createListingRequest));
     }
 
+    @DeleteMapping(path = "/{listingId}")
+    public ResponseEntity<Object> deleteListing(@PathVariable Long listingId) {
+        this.listingService.deleteListing(listingId);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PutMapping(path = "/{listingId}")
+    public ResponseEntity<Long> updateListing(
+            @Valid @RequestBody CreateListingRequest createListingRequest,
+            @PathVariable Long listingId) {
+        return ResponseEntity.ok(this.listingService.updateListing(createListingRequest, listingId));
+    }
+
     @GetMapping(path = "/lastCreated")
     public ResponseEntity<List<PreviewListing>> getLastCreated() {
         return ResponseEntity.ok(this.listingService.getLastCreated());

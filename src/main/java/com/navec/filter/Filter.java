@@ -40,6 +40,9 @@ public class Filter {
     @Column(columnDefinition = "TINYINT DEFAULT 0")
     private Boolean required;
 
+    @Column(name = "show_in_preview", columnDefinition = "TINYINT DEFAULT 0")
+    private Boolean showInPreview;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "filter", orphanRemoval = true)
     private List<FilterOption> filterOptions;
 

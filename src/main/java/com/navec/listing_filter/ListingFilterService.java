@@ -58,4 +58,16 @@ public class ListingFilterService {
                 .findFirst()
                 .orElseThrow(() -> new ResponseException(HttpStatus.NOT_FOUND));
     }
+
+    public List<ListingFilter> findByListingId(Long listingId) {
+        return this.listingFilterRepository.findByListingId(listingId);
+    }
+
+    public List<ListingFilter> getMultipleListings(List<Long> listingIds) {
+        return this.listingFilterRepository.findByListingIdIn(listingIds);
+    }
+
+    public void removeByListingId(Listing listing) {
+        this.listingFilterRepository.deleteByListing(listing);
+    }
 }

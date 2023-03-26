@@ -16,14 +16,17 @@ import com.navec.image.Image;
 import com.navec.image.ImageDto;
 import com.navec.image.ImageService;
 import com.navec.listing.request.CreateListingRequest;
-import com.navec.listing_filter.ListingFilterRequest;
 import com.navec.listing.response.ListingResponse;
 import com.navec.listing.response.PreviewListing;
+import com.navec.listing_filter.ListingFilter;
+import com.navec.listing_filter.ListingFilterRequest;
 import com.navec.listing_filter.ListingFilterService;
 import com.navec.section.Section;
 import com.navec.section.SectionService;
 import com.navec.user.UserService;
+import com.navec.utils.PermissionUtils;
 import com.navec.utils.TimestampUtils;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -90,9 +93,9 @@ public class ListingService {
 
         Listing newListing = new Listing();
 
-        if(!section.getBrands().isEmpty()) {
-            if(createListingRequest.getBrandId() == null) {
-                throw  new ResponseException(HttpStatus.UNPROCESSABLE_ENTITY, "Brand is required");
+        if (!section.getBrands().isEmpty()) {
+            if (createListingRequest.getBrandId() == null) {
+                throw new ResponseException(HttpStatus.UNPROCESSABLE_ENTITY, "Brand is required");
             }
 
             this.assignBrandRelations(createListingRequest, newListing);
@@ -100,21 +103,10 @@ public class ListingService {
 
         this.validateRequestFilters(createListingRequest, filters);
 
-        newListing.setUser(this.userService.getCurrentUser());
-        newListing.setTitle(createListingRequest.getTitle());
-        newListing.setDescription(createListingRequest.getDescription());
-        newListing.setPrice(createListingRequest.getPrice());
-        newListing.setPriceBg(createListingRequest.getPrice());
-        newListing.setPriceEu(Math.floor(createListingRequest.getPrice() / EUR_TO_BGN_COURSE));
         newListing.setSection(section);
-        newListing.setArea(this.areaService.findById(createListingRequest.getAreaId()));
-        newListing.setPlace(this.placeService.findById(createListingRequest.getPlaceId()));
-        newListing.setYoutubeUrl(createListingRequest.getYoutubeUrl());
-        newListing.setCreatedAt(TimestampUtils.getCurrentTimestamp());
-        newListing.setUpdatedAt(TimestampUtils.getCurrentTimestamp());
-        newListing.setCurrency(createListingRequest.getCurrency());
-        newListing.setArchived(false);
+        newListing.setUser(this.userService.getCurrentUser());
         newListing.setWatchers(0);
+        this.assignBaseProperties(createListingRequest, newListing);
         Listing savedListing = this.listingRepository.save(newListing);
         savedListing.setImages(
                 this.imageService.updateImagesWithListing(createListingRequest.getImages(), savedListing)
@@ -125,17 +117,64 @@ public class ListingService {
         return savedListing.getId();
     }
 
+    private void assignBaseProperties(CreateListingRequest createListingRequest, Listing newListing) {
+        newListing.setTitle(createListingRequest.getTitle());
+        newListing.setDescription(createListingRequest.getDescription());
+        newListing.setPrice(createListingRequest.getPrice());
+        newListing.setPriceBg(createListingRequest.getPrice());
+        newListing.setPriceEu(Math.floor(createListingRequest.getPrice() / EUR_TO_BGN_COURSE));
+        newListing.setArea(this.areaService.findById(createListingRequest.getAreaId()));
+        newListing.setPlace(this.placeService.findById(createListingRequest.getPlaceId()));
+        newListing.setYoutubeUrl(createListingRequest.getYoutubeUrl());
+        newListing.setCreatedAt(TimestampUtils.getCurrentTimestamp());
+        newListing.setUpdatedAt(TimestampUtils.getCurrentTimestamp());
+        newListing.setCurrency(createListingRequest.getCurrency());
+    }
 
+
+    @Transactional
+    public Long updateListing(CreateListingRequest updateListingRequest, Long listingId) {
+        Listing listing = this.findListingById(listingId);
+        Section section = this.sectionService.findById(updateListingRequest.getSectionId());
+        Map<Long, Filter> filters = getLongFilterMap(section);
+
+        if (PermissionUtils.isMissingPermission(this.userService.getCurrentUser(), listing.getUser().getId())) {
+            throw new ResponseException(HttpStatus.FORBIDDEN);
+        }
+
+        if (!section.getBrands().isEmpty() && updateListingRequest.getBrandId() == null) {
+            throw new ResponseException(HttpStatus.UNPROCESSABLE_ENTITY, "Brand is required");
+        }
+
+        this.validateRequestFilters(updateListingRequest, this.getLongFilterMap(section));
+
+        if (!Objects.equals(updateListingRequest.getBrandId(), listing.getBrand().getId())) {
+            this.assignBrandRelations(updateListingRequest, listing);
+        }
+        this.assignBaseProperties(updateListingRequest, listing);
+        Listing savedListing = this.listingRepository.save(listing);
+        this.imageService.removeImagesForListing(listing.getId());
+        savedListing.setImages(
+                this.imageService.updateImagesWithListing(updateListingRequest.getImages(), savedListing)
+        );
+        this.listingFilterService.removeByListingId(listing);
+        savedListing.setListingFilters(
+                this.listingFilterService.createListingFiltersWithListing(
+                        updateListingRequest.getFilters(),
+                        savedListing,
+                        filters)
+        );
+        return listing.getId();
+    }
 
     private Map<Long, Filter> getLongFilterMap(Section section) {
         Map<Long, Filter> filters = new HashMap<>();
-
         this.filterService.getFiltersBySection(section.getId())
                 .forEach(f -> filters.put(f.getId(), f));
         return filters;
     }
 
-    private void validateRequestFilters(CreateListingRequest createListingRequest, Map<Long, Filter>  filters) {
+    private void validateRequestFilters(CreateListingRequest createListingRequest, Map<Long, Filter> filters) {
 
         Set<Long> allIncomingFilterIds = createListingRequest.getFilters().stream()
                 .map(ListingFilterRequest::getFilterId)
@@ -144,13 +183,13 @@ public class ListingService {
         HashMap<String, String> errors = new HashMap<>();
 
         filters.forEach((key, value) -> {
-                    if (Boolean.TRUE.equals(value.getRequired())) {
-                        boolean exist = allIncomingFilterIds.contains(value.getId());
-                        if (!exist) {
-                            errors.put(value.getName(), "Required");
-                        }
-                    }
-                });
+            if (Boolean.TRUE.equals(value.getRequired())) {
+                boolean exist = allIncomingFilterIds.contains(value.getId());
+                if (!exist) {
+                    errors.put(value.getName(), "Required");
+                }
+            }
+        });
 
         if (!errors.isEmpty()) {
             throw new ResponseException(HttpStatus.UNPROCESSABLE_ENTITY, "Missing information for filters", errors);
@@ -165,17 +204,16 @@ public class ListingService {
                         return false;
                     }
 
-                    if(realFilter.getType() == FilterType.NORMAL) {
+                    if (realFilter.getType() == FilterType.NORMAL) {
                         return realFilter.getFilterOptions().
                                 stream()
                                 .anyMatch(l -> Objects.equals(l.getId(), incomingFilter.getFilterOptionId()));
                     }
 
-                    // TODO: Validate other types of Filters based on factory
                     return true;
                 });
 
-        if(!allMustExist) {
+        if (!allMustExist) {
             throw new ResponseException(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid filter or filter option");
         }
     }
@@ -194,24 +232,35 @@ public class ListingService {
 
     public List<PreviewListing> getLastCreated() {
         List<Listing> listings = this.listingRepository.getLatCreatedListings();
+        List<ListingFilter> listingFilters = this.listingFilterService.getMultipleListings(listings.stream().map(Listing::getId).toList());
         return listings.stream()
-                .map(this::createPreviewListing)
+                .map(l -> this.createPreviewListing(l, listingFilters.stream()
+                                .filter(f -> Objects.equals(f.getListing().getId(), l.getId()))
+                                .toList()
+                        )
+                )
                 .toList();
     }
 
     public List<PreviewListing> getTopViewed() {
         List<Listing> listings = this.listingRepository.getTopViewed();
+        List<ListingFilter> listingFilters = this.listingFilterService.getMultipleListings(listings.stream().map(Listing::getId).toList());
+
         return listings.stream()
-                .map(this::createPreviewListing)
+                .map(l -> this.createPreviewListing(l, listingFilters.stream()
+                                .filter(f -> Objects.equals(f.getListing().getId(), l.getId()))
+                                .toList()
+                        )
+                )
                 .toList();
     }
 
-    private PreviewListing createPreviewListing(Listing listing) {
+    private PreviewListing createPreviewListing(Listing listing, List<ListingFilter> listingFilters) {
         Image image = listing.getImages() != null && !listing.getImages().isEmpty() ?
                 listing.getImages().get(0) : null;
         String publishedFrom = "частно лице";
         String placeTitle = this.extractPlaceTitle(listing);
-        List<String> footer = new ArrayList<>();
+        List<String> footer = this.extractPreviewFooter(listingFilters);
         return PreviewListing.builder()
                 .id(listing.getId())
                 .title(listing.getTitle())
@@ -225,17 +274,38 @@ public class ListingService {
                 .build();
     }
 
+    private List<String> extractPreviewFooter(List<ListingFilter> listingFilters) {
+        return listingFilters.stream()
+                .filter(lf -> lf.getFilter().getShowInPreview())
+                .map(lf -> {
+
+                    if (lf.getFilter().getType() == FilterType.NORMAL) {
+                        return lf.getFilterOption().getName();
+                    }
+
+                    return lf.getValue();
+                })
+                .toList();
+    }
+
     private String extractPlaceTitle(Listing listing) {
         Place place = listing.getPlace();
         Area area = listing.getArea();
 
-        if(place != null) {
+        if (place != null) {
             return place.getName();
         }
-        if(area != null) {
+        if (area != null) {
             return area.getName();
         }
 
         return "";
+    }
+
+
+    public void deleteListing(Long listingId) {
+        Listing listing = this.findListingById(listingId);
+        listing.setDeletedAt(TimestampUtils.getCurrentTimestamp());
+        this.listingRepository.save(listing);
     }
 }

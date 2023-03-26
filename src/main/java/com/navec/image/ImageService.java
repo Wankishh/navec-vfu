@@ -32,6 +32,10 @@ public class ImageService {
         return this.imageRepository.saveAll(images);
     }
 
+    public void removeImagesForListing(Long listingId) {
+        this.imageRepository.deleteByListingId(listingId);
+    }
+
     public ImageDto uploadFile(MultipartFile file) throws IOException {
         String newFileName = generateFileName();
         String fileNameAndExt = newFileName + "." + getExt(file.getOriginalFilename());
