@@ -79,7 +79,8 @@ public class ListingService {
     }
 
     public ListingResponse getListing(final Long listingId) throws ResponseException {
-        return new ListingResponse(findListingById(listingId), this.env.getBaseImageUri());
+        // TODO: fix N+1 problem
+        return new ListingResponse(this.findListingById(listingId), this.env.getBaseImageUri());
     }
 
     public Listing findListingById(Long listingId) {
@@ -88,6 +89,7 @@ public class ListingService {
     }
 
     public Long createListing(CreateListingRequest createListingRequest) {
+        // TODO: fix n+1 problem in brands
         Section section = this.sectionService.findById(createListingRequest.getSectionId());
         Map<Long, Filter> filters = getLongFilterMap(section);
 
@@ -102,7 +104,6 @@ public class ListingService {
         }
 
         this.validateRequestFilters(createListingRequest, filters);
-
         newListing.setSection(section);
         newListing.setUser(this.userService.getCurrentUser());
         newListing.setWatchers(0);
@@ -131,9 +132,9 @@ public class ListingService {
         newListing.setCurrency(createListingRequest.getCurrency());
     }
 
-
     @Transactional
     public Long updateListing(CreateListingRequest updateListingRequest, Long listingId) {
+        // TOOD: Fix N+1 problem
         Listing listing = this.findListingById(listingId);
         Section section = this.sectionService.findById(updateListingRequest.getSectionId());
         Map<Long, Filter> filters = getLongFilterMap(section);

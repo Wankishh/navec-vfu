@@ -3,6 +3,7 @@ package com.navec.image;
 import com.navec.environment.Env;
 import com.navec.listing.Listing;
 import com.navec.utils.TimestampUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ImageService {
 
     private final ImageRepository imageRepository;
@@ -41,7 +43,8 @@ public class ImageService {
         String fileNameAndExt = newFileName + "." + getExt(file.getOriginalFilename());
         Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, fileNameAndExt);
         Files.write(fileNameAndPath, file.getBytes());
-
+        boolean isReadable = fileNameAndPath.toFile().setReadable(true, false);
+        log.info("file: {}, isReadable: {}", newFileName, isReadable);
         Image newImage = new Image();
 
         newImage.setName(fileNameAndExt);
