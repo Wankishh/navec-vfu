@@ -2,15 +2,13 @@ package com.navec.image;
 
 import com.navec.environment.Env;
 import com.navec.listing.Listing;
+import com.navec.storage.Storage;
 import com.navec.utils.TimestampUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -21,11 +19,14 @@ public class ImageService {
 
     private final Env env;
 
-    public static final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/../uploads";
+    private final Storage storage;
 
-    public ImageService(ImageRepository imageRepository, Env env) {
+    public ImageService(ImageRepository imageRepository,
+                        Env env,
+                        Storage storage) {
         this.imageRepository = imageRepository;
         this.env = env;
+        this.storage = storage;
     }
 
     public List<Image> updateImagesWithListing(List<Long> imageIds, Listing listing) {
@@ -41,10 +42,7 @@ public class ImageService {
     public ImageDto uploadFile(MultipartFile file) throws IOException {
         String newFileName = generateFileName();
         String fileNameAndExt = newFileName + "." + getExt(file.getOriginalFilename());
-        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, fileNameAndExt);
-        Files.write(fileNameAndPath, file.getBytes());
-        boolean isReadable = fileNameAndPath.toFile().setReadable(true, false);
-        log.info("file: {}, isReadable: {}", newFileName, isReadable);
+        this.storage.putFile(fileNameAndExt, file.getInputStream());
         Image newImage = new Image();
 
         newImage.setName(fileNameAndExt);

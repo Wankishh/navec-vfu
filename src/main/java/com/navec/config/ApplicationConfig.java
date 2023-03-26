@@ -2,6 +2,9 @@ package com.navec.config;
 
 import com.navec.environment.Env;
 import com.navec.environment.EnvImpl;
+import com.navec.storage.Storage;
+import com.navec.storage.StorageImpl;
+import com.navec.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.navec.user.UserRepository;
 
 @Configuration
 @RequiredArgsConstructor
@@ -54,4 +56,9 @@ public class ApplicationConfig {
         return new EnvImpl();
     }
 
+
+    @Bean
+    public Storage s3client() {
+        return new StorageImpl();
+    }
 }
