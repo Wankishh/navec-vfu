@@ -1,10 +1,11 @@
-backend/HELP.md
+HELP.md
 target/
 !backend/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 db/data
 uploads
+/src/main/resources/application-prod.properties
 
 !**/node_modules
 
