@@ -28,6 +28,8 @@ import com.navec.utils.PermissionUtils;
 import com.navec.utils.TimestampUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -233,11 +235,9 @@ public class ListingService {
 
     public List<PreviewListing> getLastCreated() {
         List<Listing> listings = this.listingRepository.getLatCreatedListings();
-        List<ListingFilter> listingFilters = this.listingFilterService.getMultipleListings(listings.stream().map(Listing::getId).toList());
+        List<ListingFilter> listingFilters = this.listingFilterService.getMultipleListings(getListingIds(listings));
         return listings.stream()
-                .map(l -> this.createPreviewListing(l, listingFilters.stream()
-                                .filter(f -> Objects.equals(f.getListing().getId(), l.getId()))
-                                .toList()
+                .map(l -> this.createPreviewListing(l, getListingFilters(listingFilters, l)
                         )
                 )
                 .toList();
@@ -245,12 +245,10 @@ public class ListingService {
 
     public List<PreviewListing> getTopViewed() {
         List<Listing> listings = this.listingRepository.getTopViewed();
-        List<ListingFilter> listingFilters = this.listingFilterService.getMultipleListings(listings.stream().map(Listing::getId).toList());
+        List<ListingFilter> listingFilters = this.listingFilterService.getMultipleListings(getListingIds(listings));
 
         return listings.stream()
-                .map(l -> this.createPreviewListing(l, listingFilters.stream()
-                                .filter(f -> Objects.equals(f.getListing().getId(), l.getId()))
-                                .toList()
+                .map(l -> this.createPreviewListing(l, getListingFilters(listingFilters, l)
                         )
                 )
                 .toList();
@@ -308,5 +306,25 @@ public class ListingService {
         Listing listing = this.findListingById(listingId);
         listing.setDeletedAt(TimestampUtils.getCurrentTimestamp());
         this.listingRepository.save(listing);
+    }
+
+    public List<PreviewListing> getUserListings(Long userId) {
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Listing> listings = this.listingRepository.findByUserId(userId);
+        List<ListingFilter> listingFilters = this.listingFilterService.getMultipleListings(getListingIds(listings));
+
+        return listings.stream()
+                .map(l -> this.createPreviewListing(l, this.getListingFilters(listingFilters, l)))
+                .toList();
+    }
+
+    private List<Long> getListingIds(List<Listing> listings) {
+        return listings.stream().map(Listing::getId).toList();
+    }
+
+    private List<ListingFilter> getListingFilters(List<ListingFilter> listingFilters, Listing l) {
+        return listingFilters.stream()
+                .filter(f -> Objects.equals(f.getListing().getId(), l.getId()))
+                .toList();
     }
 }

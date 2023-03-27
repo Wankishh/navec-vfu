@@ -4,8 +4,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 db/data
-uploads
-/src/main/resources/application-prod.properties
 
 !**/node_modules
 
@@ -36,3 +34,5 @@ build/
 
 ### VS Code ###
 .vscode/
+src/main/resources/test.txt
+src/main/resources/application-prod.properties

@@ -1,5 +1,7 @@
 package com.navec.user;
 
+import com.navec.listing.ListingService;
+import com.navec.listing.response.PreviewListing;
 import com.navec.user.request.ActivateUserRequestDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,11 +17,13 @@ import java.io.UnsupportedEncodingException;
 @RequestMapping(path = "/api/v1/users")
 @Tag(name = "User")
 public class UserController {
-
     private final UserService userService;
+    private final ListingService listingsService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService,
+                          ListingService listingsService) {
         this.userService = userService;
+        this.listingsService = listingsService;
     }
 
     @PostMapping
@@ -50,5 +54,10 @@ public class UserController {
     ) {
         userService.deleteUser(pathUserId);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/{userId}/listings")
+    public ResponseEntity<List<PreviewListing>> getUserListings(@PathVariable("userId") Long userId) {
+       return ResponseEntity.ok(this.listingsService.getUserListings(userId));
     }
 }
