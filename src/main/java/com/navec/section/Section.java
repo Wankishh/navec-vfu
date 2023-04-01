@@ -13,12 +13,6 @@ import java.util.List;
 @Entity
 @Getter @Setter
 @Table(name = "sections")
-@NamedEntityGraph(
-        name = "with-brands",
-        attributeNodes = {
-                @NamedAttributeNode("brands")
-        }
-)
 public class Section {
     @Id
     @GeneratedValue

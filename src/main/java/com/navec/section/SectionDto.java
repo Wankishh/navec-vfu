@@ -1,7 +1,12 @@
 package com.navec.section;
 
 
+import com.navec.brand.BrandDto;
+import com.navec.filter.FilterDto;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class SectionDto {
@@ -14,6 +19,12 @@ public class SectionDto {
     private final String createdAt;
     private final String updatedAt;
 
+    /**
+     * Those are set outside in order to bypass multiple bag exception
+     */
+    private List<BrandDto> brands;
+    private List<FilterDto> filters;
+
     public SectionDto(Section section) {
         this.id = section.getId();
         this.name = section.getName();
@@ -23,5 +34,7 @@ public class SectionDto {
         this.imageUrl = section.getImageUrl();
         this.createdAt = section.getCreatedAt().toString();
         this.updatedAt = section.getUpdatedAt().toString();
+        this.brands = new ArrayList<>();
+        this.filters = new ArrayList<>();
     }
 }

@@ -12,6 +12,9 @@ public class PermissionUtils {
     public static boolean isMissingPermission(User authUser, Long pathUserId) {
         boolean isAdmin = authUser.getRole() == Role.ADMIN;
         boolean isSameUser = Objects.equals(authUser.getId(), pathUserId);
-        return !isAdmin && !isSameUser;
+        if(isAdmin) {
+            return false;
+        }
+        return !isSameUser;
     }
 }

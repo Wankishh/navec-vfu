@@ -28,8 +28,6 @@ import com.navec.utils.PermissionUtils;
 import com.navec.utils.TimestampUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -101,7 +99,6 @@ public class ListingService {
             if (createListingRequest.getBrandId() == null) {
                 throw new ResponseException(HttpStatus.UNPROCESSABLE_ENTITY, "Brand is required");
             }
-
             this.assignBrandRelations(createListingRequest, newListing);
         }
 
@@ -308,15 +305,6 @@ public class ListingService {
         this.listingRepository.save(listing);
     }
 
-    public List<PreviewListing> getUserListings(Long userId) {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Listing> listings = this.listingRepository.findByUserId(userId);
-        List<ListingFilter> listingFilters = this.listingFilterService.getMultipleListings(getListingIds(listings));
-
-        return listings.stream()
-                .map(l -> this.createPreviewListing(l, this.getListingFilters(listingFilters, l)))
-                .toList();
-    }
 
     private List<Long> getListingIds(List<Listing> listings) {
         return listings.stream().map(Listing::getId).toList();
