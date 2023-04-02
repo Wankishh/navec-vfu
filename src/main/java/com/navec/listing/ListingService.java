@@ -1,8 +1,6 @@
 package com.navec.listing;
 
-import com.navec.address.area.Area;
 import com.navec.address.area.AreaService;
-import com.navec.address.place.Place;
 import com.navec.address.place.PlaceService;
 import com.navec.brand.Brand;
 import com.navec.brand.BrandService;
@@ -12,8 +10,6 @@ import com.navec.exception.ResponseException;
 import com.navec.filter.Filter;
 import com.navec.filter.FilterService;
 import com.navec.filter.FilterType;
-import com.navec.image.Image;
-import com.navec.image.ImageDto;
 import com.navec.image.ImageService;
 import com.navec.listing.request.CreateListingRequest;
 import com.navec.listing.response.ListingResponse;
@@ -27,6 +23,7 @@ import com.navec.user.UserService;
 import com.navec.utils.PermissionUtils;
 import com.navec.utils.TimestampUtils;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,6 +33,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ListingService {
     public static final double EUR_TO_BGN_COURSE = 1.956;
     private final AreaService areaService;
@@ -55,28 +53,7 @@ public class ListingService {
     private final FilterService filterService;
 
     private final ListingFilterService listingFilterService;
-
-    public ListingService(AreaService areaService,
-                          PlaceService placeService,
-                          UserService userService,
-                          SectionService sectionService,
-                          ListingRepository listingRepository,
-                          ImageService imageService,
-                          Env env,
-                          BrandService brandService,
-                          FilterService filterService,
-                          ListingFilterService listingFilterService) {
-        this.areaService = areaService;
-        this.placeService = placeService;
-        this.userService = userService;
-        this.sectionService = sectionService;
-        this.listingRepository = listingRepository;
-        this.imageService = imageService;
-        this.env = env;
-        this.brandService = brandService;
-        this.filterService = filterService;
-        this.listingFilterService = listingFilterService;
-    }
+    private final PreviewListingAssembler previewListingAssembler;
 
     public ListingResponse getListing(final Long listingId) throws ResponseException {
         // TODO: fix N+1 problem
@@ -175,7 +152,6 @@ public class ListingService {
     }
 
     private void validateRequestFilters(CreateListingRequest createListingRequest, Map<Long, Filter> filters) {
-
         Set<Long> allIncomingFilterIds = createListingRequest.getFilters().stream()
                 .map(ListingFilterRequest::getFilterId)
                 .collect(Collectors.toSet());
@@ -234,7 +210,9 @@ public class ListingService {
         List<Listing> listings = this.listingRepository.getLatCreatedListings();
         List<ListingFilter> listingFilters = this.listingFilterService.getMultipleListings(getListingIds(listings));
         return listings.stream()
-                .map(l -> this.createPreviewListing(l, getListingFilters(listingFilters, l)
+                .map(l ->
+                        this.previewListingAssembler.assemble(
+                                l, getListingFilters(listingFilters, l)
                         )
                 )
                 .toList();
@@ -245,59 +223,13 @@ public class ListingService {
         List<ListingFilter> listingFilters = this.listingFilterService.getMultipleListings(getListingIds(listings));
 
         return listings.stream()
-                .map(l -> this.createPreviewListing(l, getListingFilters(listingFilters, l)
+                .map(l ->
+                        this.previewListingAssembler.assemble(
+                                l, getListingFilters(listingFilters, l)
                         )
                 )
                 .toList();
     }
-
-    private PreviewListing createPreviewListing(Listing listing, List<ListingFilter> listingFilters) {
-        Image image = listing.getImages() != null && !listing.getImages().isEmpty() ?
-                listing.getImages().get(0) : null;
-        String publishedFrom = "частно лице";
-        String placeTitle = this.extractPlaceTitle(listing);
-        List<String> footer = this.extractPreviewFooter(listingFilters);
-        return PreviewListing.builder()
-                .id(listing.getId())
-                .title(listing.getTitle())
-                .price(listing.getPrice())
-                .priceEu(listing.getPriceEu())
-                .currency(listing.getCurrency())
-                .publishedFrom(publishedFrom)
-                .placeTitle(placeTitle)
-                .image(image != null ? new ImageDto(image, this.env.getBaseImageUri()) : null)
-                .footer(footer)
-                .build();
-    }
-
-    private List<String> extractPreviewFooter(List<ListingFilter> listingFilters) {
-        return listingFilters.stream()
-                .filter(lf -> lf.getFilter().getShowInPreview())
-                .map(lf -> {
-
-                    if (lf.getFilter().getType() == FilterType.NORMAL) {
-                        return lf.getFilterOption().getName();
-                    }
-
-                    return lf.getValue();
-                })
-                .toList();
-    }
-
-    private String extractPlaceTitle(Listing listing) {
-        Place place = listing.getPlace();
-        Area area = listing.getArea();
-
-        if (place != null) {
-            return place.getName();
-        }
-        if (area != null) {
-            return area.getName();
-        }
-
-        return "";
-    }
-
 
     public void deleteListing(Long listingId) {
         Listing listing = this.findListingById(listingId);

@@ -70,4 +70,8 @@ public class ListingFilterService {
     public void removeByListingId(Listing listing) {
         this.listingFilterRepository.deleteByListing(listing);
     }
+
+    public List<Long> findByFilterOptionIds(List<Long> filterOptionIds) {
+        return this.listingFilterRepository.findAllListingIdsByFilterOptionIdIn(filterOptionIds);
+    }
 }

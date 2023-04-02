@@ -1,5 +1,6 @@
 package com.navec.search;
 
+import jakarta.persistence.criteria.From;
 import lombok.Getter;
 import software.amazon.ion.Decimal;
 
@@ -16,9 +17,11 @@ public class SearchRequestMapper {
 
     private final Decimal priceFrom;
     private final Decimal priceTo;
-    private final Integer year;
-
     private final List<Long> filters;
+
+    private final Integer page;
+    private final Integer pageSize;
+
     public SearchRequestMapper(Map<String, String> requestParams, List<Long> filters) {
         this.sort = requestParams.get("sort") != null ? SortBy.valueOf(requestParams.get("sort")) : SortBy.NEWEST;
         this.brandId = requestParams.get("brandId") != null ? Long.valueOf(requestParams.get("brandId")) : null;
@@ -27,7 +30,9 @@ public class SearchRequestMapper {
         this.placeId = requestParams.get("placeId") != null ? Integer.valueOf(requestParams.get("placeId")) : null;
         this.priceFrom = requestParams.get("priceFrom") != null ? Decimal.valueOf(requestParams.get("priceFrom")) : null;
         this.priceTo = requestParams.get("priceTo") != null ? Decimal.valueOf(requestParams.get("priceTo")) : null;
-        this.year = requestParams.get("year") != null ? Integer.valueOf(requestParams.get("year")) : null;
+        this.page = requestParams.get("page") != null ? Integer.valueOf(requestParams.get("page")) : 1;
+        this.pageSize = requestParams.get("pageSize") != null ? Integer.valueOf(requestParams.get("pageSize")) : 25;
+
         this.filters = filters;
     }
 }

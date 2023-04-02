@@ -1,5 +1,6 @@
 package com.navec.search;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,10 +12,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/v1/search")
+@RequiredArgsConstructor
 public class SearchController {
+    private final SearchService searchService;
+
     @GetMapping(path = "")
-    public ResponseEntity<Object> search(@RequestParam Map<String, String> requestParams, @RequestParam(required = false) List<Long> filters) {
+    public ResponseEntity<SearchResponse> search(@RequestParam Map<String, String> requestParams,
+                                                 @RequestParam(required = false) List<Long> filters) {
         SearchRequestMapper searchRequestMapper = new SearchRequestMapper(requestParams, filters);
-        return ResponseEntity.ok(searchRequestMapper);
+        return ResponseEntity.ok(this.searchService.search(searchRequestMapper));
     }
 }
