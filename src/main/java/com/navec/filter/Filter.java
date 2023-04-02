@@ -44,6 +44,7 @@ public class Filter {
     private Boolean showInPreview;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "filter", orphanRemoval = true)
+    @OrderBy("id ASC")
     private List<FilterOption> filterOptions;
 
     @Column(name = "created_at", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", nullable = false)

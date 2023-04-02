@@ -4,8 +4,11 @@ import com.navec.brand.Brand;
 import com.navec.brand.BrandDto;
 import com.navec.brand.BrandService;
 import com.navec.exception.ResponseException;
+import com.navec.extras.CategoryExtraDto;
+import com.navec.extras.ExtrasService;
 import com.navec.filter.FilterDto;
 import com.navec.filter.FilterService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -13,20 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SectionService {
 
     private final SectionRepository sectionRepository;
     private final FilterService filterService;
     private final BrandService brandService;
-
-    public SectionService(SectionRepository sectionRepository,
-                          FilterService filterService,
-                          BrandService brandService) {
-        this.sectionRepository = sectionRepository;
-        this.filterService = filterService;
-        this.brandService = brandService;
-    }
-
+    private final ExtrasService extrasService;
 
     public Section findById(final Long id) {
         return this.sectionRepository.findById(id)
@@ -57,9 +53,11 @@ public class SectionService {
                 .map(BrandDto::new)
                 .toList();
         List<FilterDto> filters = this.filterService.getFilterDtosBySection(sectionId);
+        List<CategoryExtraDto> categoryExtras = this.extrasService.findBySectionId(sectionId);
         SectionDto sectionDto = new SectionDto(section);
         sectionDto.setBrands(brands);
         sectionDto.setFilters(filters);
+        sectionDto.setCategoryExtras(categoryExtras);
         return sectionDto;
     }
 }

@@ -2,6 +2,7 @@ package com.navec.section;
 
 
 import com.navec.brand.BrandDto;
+import com.navec.extras.CategoryExtraDto;
 import com.navec.filter.FilterDto;
 import lombok.Data;
 
@@ -25,6 +26,8 @@ public class SectionDto {
     private List<BrandDto> brands;
     private List<FilterDto> filters;
 
+    private List<CategoryExtraDto> categoryExtras;
+
     public SectionDto(Section section) {
         this.id = section.getId();
         this.name = section.getName();
@@ -36,5 +39,6 @@ public class SectionDto {
         this.updatedAt = section.getUpdatedAt().toString();
         this.brands = new ArrayList<>();
         this.filters = new ArrayList<>();
+        this.categoryExtras = new ArrayList<>();
     }
 }

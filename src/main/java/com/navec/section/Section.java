@@ -1,5 +1,6 @@
 package com.navec.section;
 
+import com.navec.extras.CategoryExtra;
 import com.navec.listing.Listing;
 import com.navec.brand.Brand;
 import com.navec.filter.Filter;
@@ -41,5 +42,6 @@ public class Section {
     @OneToMany(orphanRemoval = true)
     @JoinColumn(name = "section_id")
     private List<Filter> filters = new ArrayList<>();
-
+    @OneToMany(orphanRemoval = true)
+    private List<CategoryExtra> categoryExtras;
 }
