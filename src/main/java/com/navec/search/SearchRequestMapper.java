@@ -1,8 +1,6 @@
 package com.navec.search;
 
-import jakarta.persistence.criteria.From;
 import lombok.Getter;
-import software.amazon.ion.Decimal;
 
 import java.util.List;
 import java.util.Map;
@@ -15,8 +13,8 @@ public class SearchRequestMapper {
     private final Integer areaId;
     private final Integer placeId;
 
-    private final Decimal priceFrom;
-    private final Decimal priceTo;
+    private final Double priceFrom;
+    private final Double priceTo;
     private final List<Long> filters;
 
     private final Integer page;
@@ -28,10 +26,10 @@ public class SearchRequestMapper {
         this.brandModelId = requestParams.get("brandModelId") != null ? Long.valueOf(requestParams.get("brandModelId")) : null;
         this.areaId = requestParams.get("areaId") != null ? Integer.valueOf(requestParams.get("areaId")) : null;
         this.placeId = requestParams.get("placeId") != null ? Integer.valueOf(requestParams.get("placeId")) : null;
-        this.priceFrom = requestParams.get("priceFrom") != null ? Decimal.valueOf(requestParams.get("priceFrom")) : null;
-        this.priceTo = requestParams.get("priceTo") != null ? Decimal.valueOf(requestParams.get("priceTo")) : null;
-        this.page = requestParams.get("page") != null ? Integer.valueOf(requestParams.get("page")) : 1;
-        this.pageSize = requestParams.get("pageSize") != null ? Integer.valueOf(requestParams.get("pageSize")) : 25;
+        this.priceFrom = requestParams.get("priceFrom") != null ? Double.valueOf(requestParams.get("priceFrom")) : null;
+        this.priceTo = requestParams.get("priceTo") != null ? Double.valueOf(requestParams.get("priceTo")) : null;
+        this.page = requestParams.get("page") != null ? Integer.parseInt(requestParams.get("page")) : 1;
+        this.pageSize = requestParams.get("pageSize") != null ? Integer.parseInt(requestParams.get("pageSize")) : 25;
 
         this.filters = filters;
     }
