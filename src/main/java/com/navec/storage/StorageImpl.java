@@ -1,44 +1,24 @@
 package com.navec.storage;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import org.springframework.beans.factory.annotation.Value;
-
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class StorageImpl implements Storage {
-    private AmazonS3 s3client;
-
-    @Value("${config.storage_key}")
-    private String accessKey;
-
-    @Value("${config.storage_priv_key}")
-    private String privateKey;
-
-    private AmazonS3 getClient() {
-        if(this.s3client == null) {
-            AWSCredentials credentials = new BasicAWSCredentials(
-                    accessKey,
-                    privateKey
-            );
-
-            this.s3client = AmazonS3ClientBuilder
-                    .standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                    .withRegion(Regions.EU_WEST_2)
-                    .build();
-        }
-
-        return this.s3client;
-    }
+    public static final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/uploads";
 
     @Override
-    public void putFile(String filename, InputStream stream) {
-        String bucketName = "navecstorage";
-        this.getClient().putObject(bucketName, filename, stream, null);
+    public void putFile(String filename, InputStream stream) throws IOException {
+        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, filename);
+        Files.createFile(fileNameAndPath);
+        try (OutputStream outputStream = new FileOutputStream(fileNameAndPath.toFile())) {
+            outputStream.write(stream.readAllBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
